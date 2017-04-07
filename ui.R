@@ -2,8 +2,8 @@
 library(shiny)
 
 
-#TODO: formatting of saved data- json? want arbitrary label length,  easier to input new labels text input
-# tab to add labels
+# how many labels will we need to add? will it change over time?
+# leaderboard does not currently have any information that is useful. change this.
 
 #====== setup tabs ===========
 tab_login       <- tabPanel('login',

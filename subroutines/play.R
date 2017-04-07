@@ -93,7 +93,7 @@ observeEvent(input$apply_label, {
   round_num  <- values$round_num    
   label      <- input$label
   brush_data <- input$image_dblclick
-  
+
   if(is.null(brush_data)){ label_output <- NA
   }else{
     x_range <- img_width
@@ -107,9 +107,9 @@ observeEvent(input$apply_label, {
   
   
   # name labels already applied
-  if(is.null(values$data_record)) return(NULL)
-  if((!label %in% names(data_record))) return(NULL)
   data_record   <- isolate(values$data_record)
+  if(is.null(data_record)) return(NULL)
+  if((!label %in% names(data_record))) return(NULL)
   num_label     <- length(data_record[[label]][round_num])
   data_record[[label]][round_num] <- label_output
   data_record$status[round_num]     <- TRUE
@@ -128,6 +128,8 @@ output$ref_plot <- renderImage({
 
 
 output$selected_area <- renderImage({
+  # this part should be refactored....
+  
   if (verbose) print("in selected_area renderImage")
   
   data_record <- values$data_record
@@ -140,7 +142,10 @@ output$selected_area <- renderImage({
     return(l)
   }))
   
-  outfile <- file.path("img", "tmp.png")
+  # Write the data to a temporary file locally
+  fileName <- sprintf("%s_%s.png", as.integer(Sys.time()), isolate(values$username))
+  outfile <- file.path("img", fileName)
+
   if(is.null(applied) | length(applied) == 0){
     placeholder <- array(0, dim=c(1,1,1))
     png::writePNG(placeholder, outfile)
@@ -169,8 +174,7 @@ output$selected_area <- renderImage({
     
     return(selected_img)
   })
-  if (verbose) print("files grabbed")
-  
+
   # pad y-direction (all files hould have max_y, x variable, 4)
   max_y <- max(unlist(lapply(imgs, FUN= function(i){dim(i)[1]})))
   ind_x <- cumsum(unlist(lapply(imgs, FUN= function(i){dim(i)[2]})))
@@ -181,8 +185,7 @@ output$selected_area <- renderImage({
     im <- imgs[[i]]
     combined_img[(1:dim(im)[1]), (ind_x[i] - dim(im)[2] + 1):ind_x[i], 1:3] <- im
   }
-  if (verbose) print("images combined")
-  
+
   # Generate a png
   png::writePNG(combined_img, outfile)
 

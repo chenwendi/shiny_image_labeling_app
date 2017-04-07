@@ -58,6 +58,7 @@ server <- function(input, output, session) {
     data_record <- read.csv(file=output_file)
     for(l in labels){if(!l %in% names(data_record)) data_record[[l]] <- NA}
     values$data_record <- data_record
+    write.csv(data_record, file=output_file)
     round_num   <- min(which(data_record$status==FALSE))
     if(round_num==Inf)  round_num <- 1
     values$round_num <- round_num
